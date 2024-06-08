@@ -1,5 +1,5 @@
 
-## Desafío de Integración de Microservicios
+## Challenge de Integración de Microservicios
 
 Este es un desafío diseñado para poner a prueba tus habilidades en la integración de microservicios utilizando tecnologías como Laravel 8 y NestJS. El objetivo es interactuar entre dos microservicios: uno construido en Laravel para el registro de libros y otro en NestJS para el manejo de autores y la actualización de la cantidad de libros que poseen.
 
