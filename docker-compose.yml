@@ -1,0 +1,75 @@
+version: '3.8'
+services:
+  laravel:
+    build:
+      context: ./laravel8
+      dockerfile: Dockerfile
+    image: bitnami/laravel:8
+    container_name: laravel
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./laravel8:/var/www/html
+    restart: unless-stopped
+    networks:
+      - laravel-network
+
+  db:
+    image: postgres:13
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydatabase
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - laravel-network
+    command: sh -c "php artisan queue:work"
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - db
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - laravel-network
+
+  nestjs:
+    build:
+      context: ./nestjs
+      dockerfile: Dockerfile
+    container_name: nestjs
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"  # Change the port if needed
+    restart: unless-stopped
+    networks:
+      - laravel-network
+    volumes:
+      - ./nestjs:/app
+      - /app/node_modules  
+    command: sh -c "npm install && npm run start:dev"
+
+volumes:
+  laravel8:
+    driver: local
+  nestjs:
+    driver: local
+
+  pgdata:
+  pgadmin_data:
+
+networks:
+  laravel-network:
+    driver: bridge
